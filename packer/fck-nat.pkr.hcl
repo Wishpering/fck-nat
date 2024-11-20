@@ -13,17 +13,17 @@ variable "version" {
 }
 
 variable "ami_regions" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "ami_users" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
 variable "ami_groups" {
-  type = list(string)
+  type    = list(string)
   default = []
 }
 
@@ -47,7 +47,7 @@ variable "instance_type" {
 }
 
 variable "region" {
-  default = "us-west-2"
+  default = "eu-north-1"
 }
 
 variable "base_image_name" {
@@ -72,6 +72,10 @@ source "amazon-ebs" "fck-nat" {
   region                  = var.region
   ssh_username            = var.ssh_username
   temporary_key_pair_type = "ed25519"
+  launch_block_device_mappings {
+    device_name = "/dev/xvda"
+    volume_size = 10
+  }
   source_ami_filter {
     filters = {
       virtualization-type = var.virtualization_type
@@ -87,11 +91,11 @@ source "amazon-ebs" "fck-nat" {
 }
 
 build {
-  name = "fck-nat"
+  name    = "fck-nat"
   sources = ["source.amazon-ebs.fck-nat"]
 
   provisioner "file" {
-    source = "build/fck-nat-${var.version}-any.rpm"
+    source      = "build/fck-nat-${var.version}-any.rpm"
     destination = "/tmp/fck-nat-${var.version}-any.rpm"
   }
 
